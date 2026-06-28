@@ -1,0 +1,50 @@
+import re
+import pandas as pd
+
+def parse_log(file_path):
+
+    pattern = re.compile(
+        r'(?P<month>\w+)\s+'
+        r'(?P<day>\d+)\s+'
+        r'(?P<time>\d+:\d+:\d+)\s+'
+        r'(?P<host>\S+)\s+'
+        r'(?P<service>[^\[]+)'
+        r'\[(?P<pid>\d+)\]:\s+'
+        r'(?P<message>.*)'
+    )
+
+    records = []
+
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+
+        for line in file:
+
+            match = pattern.match(line.strip())
+
+            if match:
+
+                records.append({
+                    "month": match.group("month"),
+                    "day": match.group("day"),
+                    "time": match.group("time"),
+                    "host": match.group("host"),
+                    "service": match.group("service").strip(),
+                    "pid": match.group("pid"),
+                    "message": match.group("message")
+                })
+
+    return pd.DataFrame(records)
+
+
+# CHANGE THIS TO YOUR LOG FILE NAME
+log_file = "/Users/manikarthikgarlapati/Documents/vs code/AILA/hi.log"
+
+df = parse_log(log_file)
+
+print("\nFirst 10 Parsed Logs:\n")
+print(df.head(1))
+
+print("\nTotal Logs Parsed:", len(df))
+df.to_csv("parsed_logs.csv", index=False)
+
+print("\nAll parsed logs saved to parsed_logs.csv")
