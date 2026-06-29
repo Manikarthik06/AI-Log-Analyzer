@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from rag_analyzer import ask_rag
 import os
+from log_parser import parse_log_lines
 from pdf_generator import create_incident_pdf
 print("=" * 50)
 print("Current Working Directory:")
@@ -32,6 +33,7 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
 
     logs = uploaded_file.read().decode("utf-8").splitlines()
+    parsed_logs = parse_log_lines(logs)
 
     st.success(f"Loaded {len(logs)} log entries")
 
@@ -142,7 +144,7 @@ if uploaded_file is not None:
 
         st.write(response)
 
-        pdf = create_incident_pdf(response)
+        pdf = create_incident_pdf(response,parsed_logs)
 
         st.download_button(
             label="📄 Download Incident Report",
